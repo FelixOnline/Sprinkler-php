@@ -25,6 +25,16 @@ class Channel
      */
     public function post($message)
     {
+        $request = $this->sprinkler->client->post('/message/' . $this->channel);
+        $request->setHeader('key', $this->key);
+        $request->setHeader('Content-Type', 'application/json');
+        $request->setBody($message);
 
+        try {
+            $response = $request->send()->json();
+        } catch (\Guzzle\Http\Exception\BadResponseException $e) {
+            $json = $e->getResponse()->json();
+            throw new \Exception($json['message']);
+        }
     }
 }
