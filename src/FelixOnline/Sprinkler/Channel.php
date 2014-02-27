@@ -31,7 +31,7 @@ class Channel
         $request->setBody($message);
 
         try {
-            $response = $request->send()->json();
+            $request->send();
         } catch (\Guzzle\Http\Exception\BadResponseException $e) {
             $json = $e->getResponse()->json();
             throw new \Exception($json['message']);

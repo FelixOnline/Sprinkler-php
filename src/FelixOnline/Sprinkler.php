@@ -21,10 +21,27 @@ class Sprinkler
     }
 
     /**
+     * Get list of channels
+     */
+    public function channels()
+    {
+        $request = $this->client->get('/channel');
+        return $request->send()->json();
+    }
+
+    /**
      * Returns a channel object
+     *
+     * @throws Exception if channel doesn't exisit
      */
     public function channel($name, $channelKey = NULL)
     {
+        // check that channel exists first
+        $channels = $this->channels();
+        if (!in_array("/" . $name, $channels)) {
+            throw new \Exception("Channel '$name' doesn't exist");
+        }
+
         // if no channel key is specified and there is an admin key then get the 
         // channel key through the api
 
@@ -43,5 +60,36 @@ class Sprinkler
 
         $channel = new Sprinkler\Channel($this, $name, $channelKey);
         return $channel;
+    }
+
+    /**
+     * Create a new channel or if it already exisits then return the channel 
+     * object
+     */
+    public function newChannel($name)
+    {
+        if (is_null($name)) {
+            throw new \Exception('No admin key defined');
+        }
+
+        $channels = $this->channels();
+        if (in_array("/" . $name, $channels)) {
+            return $this->channel($name);
+        }
+
+        $request = $this->client->post('/channel');
+        $request->setHeader('key', $this->key);
+        $request->setHeader('Content-Type', 'application/json');
+        $request->setBody(json_encode(array(
+            'channel' => $name
+        )));
+
+        try {
+            $response = $request->send()->json();
+            return new Sprinkler\Channel($this, $name, $response['key']);
+        } catch (\Guzzle\Http\Exception\BadResponseException $e) {
+            $json = $e->getResponse()->json();
+            throw new \Exception($json['message']);
+        }
     }
 }
