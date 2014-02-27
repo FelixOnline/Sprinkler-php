@@ -1,6 +1,6 @@
-# sprinker PHP client
+# Sprinker PHP client
 
-PHP client for [sprinkler](https://github.com/FelixOnline/sprinkler)
+PHP client for [Sprinkler](https://github.com/FelixOnline/Sprinkler)
 
 ## Usage
 
