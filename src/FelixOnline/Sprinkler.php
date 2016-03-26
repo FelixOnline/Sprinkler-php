@@ -21,12 +21,27 @@ class Sprinkler
     }
 
     /**
+     * Get version details
+     */
+    public function version()
+    {
+        $request = $this->client->get('/');
+        $return = $request->send()->json();
+
+        unset($return['status']);
+
+        return $return;
+    }
+
+    /**
      * Get list of channels
      */
     public function channels()
     {
         $request = $this->client->get('/channel');
-        return $request->send()->json();
+        $return = $request->send()->json();
+
+        return $return['channels'];
     }
 
     /**
@@ -58,7 +73,7 @@ class Sprinkler
             }
         }
 
-        $channel = new Sprinkler\Channel($this, $name, $channelKey);
+        $channel = new Sprinkler\Channel($this, $name, $channelKey, $this->key);
         return $channel;
     }
 
@@ -86,7 +101,7 @@ class Sprinkler
 
         try {
             $response = $request->send()->json();
-            return new Sprinkler\Channel($this, $name, $response['key']);
+            return new Sprinkler\Channel($this, $name, $response['key'], $this->key);
         } catch (\Guzzle\Http\Exception\BadResponseException $e) {
             $json = $e->getResponse()->json();
             throw new \Exception($json['message']);
