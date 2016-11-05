@@ -2,7 +2,7 @@
     "name": "felixonline/sprinkler",
     "description": "Sprinkler PHP client",
     "require": {
-        "guzzlehttp/guzzle": "6.2.*"
+        "guzzlehttp/guzzle": "5.*"
     },
     "license": "MIT",
     "authors": [
